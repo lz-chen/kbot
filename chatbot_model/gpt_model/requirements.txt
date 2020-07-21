@@ -6,4 +6,4 @@ toposort==1.5
 numpy==1.17.3
 Pillow==6.2.1
 flask
-tensorflow-gpu==1.15.0
+tensorflow-gpu==1.15.2
