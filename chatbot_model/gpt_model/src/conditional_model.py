@@ -3,11 +3,15 @@ import os
 from typing import Optional
 
 import numpy as np
-import tensorflow as tf
+# import tensorflow as tf
+import tensorflow._api.v2.compat.v1 as tf
 import model, sample, encoder
 from dataclasses import dataclass
 import os
 from pathlib import Path
+
+# otherwise self.sess.run(tf.global_variables_initializer()) will throw an error
+tf.disable_eager_execution()
 
 @dataclass
 class ConditionalModel:
@@ -40,7 +44,8 @@ class ConditionalModel:
         self.sess = tf.Session()
         self.sess.run(tf.global_variables_initializer())
 
-        # with tf.Session(graph=tf.Graph()) as sess:
+        # with tf.Session(graph=tf.Graph()) as self.sess:
+        self.sess.run(tf.global_variables_initializer())
         self.context = tf.placeholder(tf.int32, [self.batch_size, None])
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)

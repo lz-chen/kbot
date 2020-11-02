@@ -13,9 +13,11 @@ def home():
 def get_bot_response():
     userText = request.args.get('msg')
     model_result = cond_model.generate(sentences=[userText])
-    reply = '\n'.join(list(model_result.values())[0].split()[:-1]).strip()
-    if reply.startswith(userText.strip()):
-        reply.strip(userText)
+    reply = ' '.join(list(model_result.values())[0].split()[:-1]).strip()
+    print(reply)
+    print(userText.strip())
+    if reply.strip().startswith(userText.strip()):
+        reply = reply.strip().strip(userText)
     return reply
 
 
@@ -23,5 +25,6 @@ if __name__ == "__main__":
     #TODO next: use argparse for model path, change default path to the original one
     cond_model = ConditionalModel(model_name='plato',
                                   seed=155,
-                                  length=100)
-    app.run(host='0.0.0.0', port=8000)
+                                  length=50)
+    # app.run(host='0.0.0.0', port=8000)
+    app.run(host='127.0.0.1', port=8000)

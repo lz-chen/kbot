@@ -1,3 +1,6 @@
+"""
+The sc
+"""
 #!/usr/bin/env python3
 # Usage:
 #  PYTHONPATH=src ./train --dataset <file|directory|glob>
@@ -41,7 +44,7 @@ def train_main(dataset,
 
     enc = encoder.get_encoder(model_name)
     hparams = model.default_hparams()
-    with open(os.path.join('chatbot_model', 'gpt_model', 'models', model_name, 'hparams.json')) as f:
+    with open(os.path.join('chatbot_model', 'trained_models', model_name, 'hparams.json')) as f:
         hparams.override_from_dict(json.load(f))
 
     if sample_length is None:
@@ -98,10 +101,10 @@ def train_main(dataset,
             if ckpt is None:
                 # Get fresh GPT weights if new run.
                 ckpt = tf.train.latest_checkpoint(
-                    os.path.join('chatbot_model', 'gpt_model', 'models', model_name))
+                    os.path.join('chatbot_model', 'trained_models', model_name))
         elif restore_from == 'fresh':
             ckpt = tf.train.latest_checkpoint(
-                os.path.join('chatbot_model', 'gpt_model', 'models', model_name))
+                os.path.join('chatbot_model', 'trained_models', model_name))
         else:
             ckpt = tf.train.latest_checkpoint(restore_from)
         print(str(hvd.local_rank()), 'Loading checkpoint', ckpt)

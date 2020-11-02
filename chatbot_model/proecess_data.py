@@ -1,3 +1,8 @@
+"""
+Script for preprocessing text (example from pytorch tutorial). Used for verification of the
+simple SEQ2SEQ model and doesn't seem to be used elsewhere
+"""
+
 import codecs
 import csv
 import os

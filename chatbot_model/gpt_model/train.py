@@ -6,7 +6,8 @@ import argparse
 import json
 import os
 import numpy as np
-import tensorflow as tf
+# import tensorflow as tf
+import tensorflow._api.v2.compat.v1 as tf
 import time
 import tqdm
 from tensorflow.core.protobuf import rewriter_config_pb2
@@ -39,7 +40,7 @@ parser.add_argument('--learning_rate', metavar='LR', type=float, default=0.00001
                     help='Learning rate for Adam')
 parser.add_argument('--accumulate_gradients', metavar='N', type=int, default=1,
                     help='Accumulate gradients across N minibatches.')
-parser.add_argument('--memory_saving_gradients', default=False, action='store_true',
+parser.add_argument('--memory_saving_gradients', action='store_true',
                     help='Use gradient checkpointing to reduce vram usage.')
 parser.add_argument('--only_train_transformer_layers', default=False, action='store_true',
                     help='Restrict training to the transformer blocks.')
@@ -104,7 +105,7 @@ def main():
             "Can't get samples longer than window size: %s" % hparams.n_ctx)
 
     if args.model_name == '345M':
-        args.memory_saving_gradients = True
+        # args.memory_saving_gradients = True
         if args.optimizer == 'adam':
             args.only_train_transformer_layers = True
 

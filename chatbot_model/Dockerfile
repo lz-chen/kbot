@@ -1,12 +1,4 @@
 FROM python:3.7.4
-#WORKDIR /media/liah/DATA/docker_image
-#COPY . /media/liah/DATA/docker_image
-#RUN pip install --trusted-host pypi.python.org -r requirements.txt
-#EXPOSE 8000
-#ENV PYTHONPATH /media/liah/DATA/docker_image/gpt_model/src:$PYTHONPATH
-#CMD ["python", "app.py"]
-
-#FROM tensorflow/tensorflow:1.12.0-gpu-py3
 
 # nvidia-docker 1.0
 LABEL com.nvidia.volumes.needed="nvidia_driver"

@@ -5,7 +5,7 @@ from typing import Optional, List
 
 from chatbot_model.vocabulary import Vocabulary
 
-MAX_LENGTH = 30  # Maximum sentence length to consider
+MAX_LENGTH = 50  # Maximum sentence length to consider
 MIN_VOCAB_COUNT = 3  # Minimum word count threshold for trimming
 ABBRS = ['e.g.', 'i.e.', 'u.s.', 'u.s.s.r', 'i.e', ]
 
@@ -22,20 +22,43 @@ def normalizeString(s):
     """Lowercase, trim, and remove non-letter characters"""
     s = unicodeToAscii(s)
     s = re.sub(r"([.!?])", r" \1", s)
-    s = re.sub(r"[^a-zA-Z.!?]+", r" ", s)
+    # s = re.sub(r"[^a-zA-Z.!?]+", r" ", s)
     s = re.sub(r"\s+", r" ", s).strip()
     return s
 
 
 def split_line(l: str) -> List[str]:
-    # remove speaker name
-    l = l.split(':')[-1].lower().strip()
-    for abbr in ABBRS:
-        l.replace(abbr, ''.join(abbr.split('.')))
-    delimiters = ['.', '?', '!']
-    regexPattern = '|'.join(map(re.escape, delimiters))
-    return [normalizeString(s) for s in re.split(regexPattern, l) if s != '']
+    # # remove speaker name, only necessary for nc text
+    # TODO remove speaker while merge text for nc
+    # l = l.split(':')[-1].lower().strip()
+    # for abbr in ABBRS:
+    #     l.replace(abbr, ''.join(abbr.split('.')))
+    # delimiters = ['.', '?', '!']
+    # regexPattern = '|'.join(map(re.escape, delimiters))
+    # return [normalizeString(s) for s in re.split(regexPattern, l) if s != '']
+    return normalizeString(l)
 
+
+# used for nc text
+# def get_sentence_pairs(datafile: Path):
+#     """Read query/response pairs and return a voc object"""
+#     print("Reading lines...")
+#     # Read the file and split into lines
+#     lines = open(datafile.as_posix(), encoding='utf-8'). \
+#         read().strip().split('\n')
+#     # Split every line into pairs and normalize
+#     if not datafile.as_posix().startswith('film'):
+#         sentences = []
+#         for i, l in enumerate(lines):
+#             if not l.startswith('###'):
+#                 sentences += split_line(l)
+#         pairs = []
+#         for i in range(0, len(sentences), 2):
+#             pairs.append((sentences[i], sentences[min(len(sentences) - 1, i + 1)]))
+#     else:
+#         pairs = [[normalizeString(s) for s in l.split('\t')] for l in lines]
+#
+#     return pairs
 
 def get_sentence_pairs(datafile: Path):
     """Read query/response pairs and return a voc object"""
@@ -48,7 +71,10 @@ def get_sentence_pairs(datafile: Path):
         sentences = []
         for i, l in enumerate(lines):
             if not l.startswith('###'):
-                sentences += split_line(l)
+                # sentences += split_line(l)
+                sentence = split_line(l)
+                if sentence != '':
+                    sentences.append(sentence)
         pairs = []
         for i in range(0, len(sentences), 2):
             pairs.append((sentences[i], sentences[min(len(sentences) - 1, i + 1)]))
@@ -78,6 +104,7 @@ def loadPrepareData(corpus_name: str,
                     save_vocab: bool = True,
                     update_vocab: bool = True,
                     ):
+    # todo change vocab name, now it's plato.pkl, hard to know if it's vacab or text
     if not save_dir.is_dir():
         save_dir.mkdir()
     print("Start preparing training data ...")
@@ -89,6 +116,7 @@ def loadPrepareData(corpus_name: str,
     if vocab_path.is_file():
         print(f'Load existing vocabulary from {vocab_path.as_posix()}')
         voc = Vocabulary.from_file(vocab_path)
+        print("Words in vocab:", voc.num_words)
     else:
         voc = Vocabulary(vocab_name)
 
@@ -147,7 +175,7 @@ def trimRareWords(voc, pairs, MIN_COUNT):
     return keep_pairs
 
 
-if __name__ == '__main__':
+def format_nc():
     # Load/Assemble voc and pairs
     save_dir = Path('./nc_data/formatted_texts')
     topics = ['debates', 'interviews', 'talks']
@@ -160,3 +188,22 @@ if __name__ == '__main__':
     print("\npairs:")
     for pair in pairs[:10]:
         print(pair)
+
+
+def format_plato():
+    # Load/Assemble voc and pairs
+    save_dir = Path('./chatbot_model/formatted_texts/plato')
+    save_dir.mkdir(exist_ok=True)
+    datafile = Path(f'./chatbot_model/texts/plato/corpus.txt')
+    corpus_name = f'plato'
+    voc, pairs = loadPrepareData(corpus_name, datafile, save_dir, vocab_name='plato')
+
+    # Print some pairs to validate
+    print("\npairs:")
+    for pair in pairs[:10]:
+        print(pair)
+
+
+if __name__ == '__main__':
+    # Load/Assemble voc and pairs
+    format_plato()
