@@ -11,8 +11,8 @@ ENV NVIDIA_VISIBLE_DEVICES=all \
     LANG=C.UTF-8
 
 WORKDIR /media/liah/DATA/docker
-COPY . /media/liah/DATA/docker
+COPY chatbot_model /media/liah/DATA/docker
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 EXPOSE 8000
 ENV PYTHONPATH /media/liah/DATA/docker/gpt_model/src:$PYTHONPATH
-CMD ["python", "app.py"]
+CMD ["python", "chatbot_model/app.py"]
